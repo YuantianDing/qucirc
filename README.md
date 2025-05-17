@@ -106,7 +106,7 @@ c0 = circ.new_bits()
 
 circ += ops.Measure[q0, c0]
 
-circ.wires
+circ
 ```
 
 ![](https://github.com/YuantianDing/qucirc/blob/main/docs/output.svg)
