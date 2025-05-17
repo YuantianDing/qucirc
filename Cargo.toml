@@ -21,7 +21,7 @@ doc = false
 path = "stub_gen.rs"
 
 [features]
-default = ["python_api", "typst"]
+default = []
 python_api = ["dep:pyo3", "dep:pyo3-stub-gen"]
 typst = [
     "dep:typst-as-lib",
