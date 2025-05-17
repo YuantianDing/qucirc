@@ -36,15 +36,15 @@ cargo add qucirc
 from qucirc import Circuit, ops
 
 # Create a new circuit with 2 qubits
-circuit = Circuit(2)
+circ = Circuit(2)
 
 # Add some gates
-circuit.add_gate(ops.H[0])  # Hadamard gate on qubit 0
-circuit.add_gate(ops.CNOT[0, 1])  # CNOT gate with control=0, target=1
+circ += ops.H[0]  # Hadamard gate on qubit 0
+circ += ops.CNOT[0, 1]  # CNOT gate with control=0, target=1
 
 # Visualize the circuit
-print(circuit.to_typst())  # Typst representation
-print(circuit._repr_svg_())  # SVG visualization
+print(circ.to_typst())  # Typst representation
+print(circ.to_svg())  # SVG visualization
 ```
 
 ### Working with Gates
