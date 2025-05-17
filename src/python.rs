@@ -1,4 +1,4 @@
-use pyo3::{prelude::*, types::PyList};
+use pyo3::prelude::*;
 use pyo3_stub_gen::define_stub_info_gatherer;
 
 use crate::{
