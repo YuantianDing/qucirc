@@ -2,6 +2,9 @@
 
 A lightweight and extensible quantum circuit representation for Python and Rust.
 
+| [crates.io](https://crates.io/crates/qucirc) | [docs.rs](https://docs.rs/qucirc) | [Github](https://github.com/YuantianDing/qucirc) | [PyPI](https://pypi.org/project/qucirc/) | [Documentation](https://yuantianding.github.io/qucirc/) |
+
+
 ## Features
 
 - Support for common quantum gates (H, X, Y, Z, CNOT, etc.) defined in [OpenQASM 3.0 Standard Library](https://openqasm.com/language/standard_library.html#)
