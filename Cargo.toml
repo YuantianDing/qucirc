@@ -9,8 +9,8 @@ homepage = "https://github.com/YuantianDing/qucirc"
 repository = "https://github.com/YuantianDing/qucirc"
 readme = "README.md"
 keywords = ["quantum", "circuit", "visualization", "python", "dyn"]
+include = ["/src", "/stub_gen.rs", "/Cargo.toml", "/Cargo.lock"]
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 [lib]
 name = "qucirc"
 crate-type = ["cdylib", "rlib"]

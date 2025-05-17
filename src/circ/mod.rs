@@ -394,8 +394,7 @@ impl std::fmt::Display for Circuit {
         write!(
             f,
             "{}",
-            self.to_gates()
-                .iter()
+            self.gates()
                 .map(|g| format!("{}", g))
                 .collect::<Vec<_>>()
                 .join("\n")
