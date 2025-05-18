@@ -1,6 +1,5 @@
 use std::collections::HashSet;
 
-use crate::typst::draw_circuit;
 use crate::wire::{Bits, Wire, ZeroState};
 use crate::{
     ops::{CircuitError, Operation},
@@ -20,6 +19,7 @@ use petgraph::{
 #[derive(Clone, Debug, derive_more::Display, Eq, Hash)]
 #[display("{}[{}]", operation, inputs.iter().map(|i| format!("{}", i)).collect::<Vec<_>>().join(","))]
 /// Encapsulates a quantum gate that couples an operation with its input wire indices.
+///
 /// This structure holds a boxed operation implementing the required interface for quantum operations and a list of indices that identify the corresponding input wires, allowing for structured management and manipulation within a quantum circuit.
 pub struct Gate {
     pub operation: Box<dyn Operation>,
@@ -60,6 +60,7 @@ impl Gate {
 )]
 #[derive(Clone, derive_more::Debug)]
 /// A structure representing a quantum circuit with its associated components is defined.
+///
 /// This type organizes the circuit’s state by maintaining a vector of wires, a directed acyclic graph where nodes correspond to quantum gates and edges represent connections via wire indices, and a vector that tracks the current output node for each input wire.
 pub struct Circuit {
     /// The inputs of the circuit. The index of the input is the index of the input wire.
@@ -72,6 +73,7 @@ pub struct Circuit {
 
 impl Circuit {
     /// Creates a new circuit instance with empty wires, graph, and current wires.
+    ///
     /// This function initializes and returns a circuit by constructing empty collections for wires, the underlying graph structure, and the current wire tracking, providing a clean starting state for circuit building.
     pub fn new() -> Self {
         Self {
@@ -82,6 +84,7 @@ impl Circuit {
     }
 
     /// Creates a new circuit instance pre-populated with a specified number of qubits.
+    ///
     /// This function initializes the circuit by constructing a vector of wires, each representing a qubit with a unique identifier based on its index, and sets up an empty directed acyclic graph along with a vector tracking the current wire outputs for each qubit.
     pub fn new_with_qubits(qubits: usize) -> Self {
         Self {
@@ -94,6 +97,7 @@ impl Circuit {
     }
 
     /// Adds a new wire to the circuit and returns its index.
+    ///
     /// This method takes ownership of a boxed wire trait object, appends it to the internal collection of wires, and updates the output tracking vector by inserting a corresponding placeholder.
     pub fn new_wire(&mut self, wire: Box<dyn Wire>) -> usize {
         let i = self.wires.len();
@@ -102,7 +106,8 @@ impl Circuit {
         i
     }
 
-    /// Adds a new gate operation to the circuit and returns the index of the added node.
+    /// Adds a new gate operation to the circuit and returns the index of the added node. (Short-hand for `push`)
+    ///
     /// This function accepts an operation and an array of input wire indices, converts the inputs to a vector, and appends a new gate to the circuit by delegating to the push method.
     pub fn perform<const N: usize>(
         &mut self,
@@ -132,18 +137,6 @@ impl Circuit {
 
         let Gate { operation, inputs } = gate;
 
-        // if let Some(Some(idx)) = iterator_all_same(inputs.iter().map(|i| self.outputs[*i])).1 {
-        //     let gate = self.graph.node_weight_mut(idx).unwrap();
-        //     let mut positions = inputs.iter().map(|i| gate.inputs.iter().position(|x| *x == *i).unwrap()).collect();
-        //     let mut op = operation.clone();
-
-        //     op.reorder_inputs(&mut positions);
-        //     if gate.operation.perform(&Gate{ operation: op, inputs: positions }) {
-        //         return idx;
-        //     }
-        // }
-
-        // operation.reorder_inputs(&mut inputs);
         let input_wires: Vec<_> = inputs.iter().map(|i| &*self.wires[*i]).collect();
         operation.type_check(&input_wires)?;
 
@@ -161,9 +154,14 @@ impl Circuit {
     }
 
     /// Returns a reference to the underlying directed acyclic graph used internally for representing the circuit.
+    ///
     /// This accessor function provides read-only access to the graph structure where nodes correspond to quantum gates and edges represent the connectivity between gates and wires.
     pub fn graph(&self) -> &DiGraph<Gate, usize> {
         &self.graph
+    }
+
+    pub fn into_graph(self) -> DiGraph<Gate, usize> {
+        self.graph
     }
 
     /// Returns an iterator over references to all gate objects contained within the circuit's internal structure.
@@ -175,16 +173,21 @@ impl Circuit {
 
     /// Returns a mutable iterator over the circuit’s gates.
     ///  
-    ///
     /// Allows in-place modifications to each gate by iterating through the mutable references of gate nodes stored in the underlying graph.
     pub fn gates_mut(&mut self) -> impl Iterator<Item = &mut Gate> {
         self.graph.node_weights_mut()
     }
 
     /// Returns a hash set containing a cloned boxed copy of each operation present in the circuit's internal structure.
+    ///
     /// This function collects the operation from every gate linked to the circuit, ensuring that the resulting set represents the unique operations applied throughout the circuit.
     pub fn operation_set(&self) -> HashSet<Box<dyn Operation>> {
         self.gates().map(|g| g.operation.clone()).collect()
+    }
+
+    #[cfg(feature = "typst")]
+    pub fn to_typst(&self) -> String {
+        format!("{}", crate::typst::QuillTable::from(self))
     }
 }
 
@@ -322,8 +325,10 @@ impl Circuit {
     ///
     ///
     /// Transforms the circuit's internal state into a typst document string, enabling further rendering or integration into documentation.
-    pub fn to_typst(&self) -> String {
-        draw_circuit(self)
+    #[cfg(feature = "typst")]
+    #[pyo3(name = "to_typst")]
+    pub fn to_typst_py(&self) -> String {
+        self.to_typst()
     }
 
     /// Returns a string representation of the circuit using debug formatting.
@@ -336,7 +341,7 @@ impl Circuit {
         format!("{}", self)
     }
 
-    #[cfg(all(feature = "typst", feature = "python_api"))]
+    #[cfg(feature = "typst")]
     /// Returns an SVG representation of the circuit as a string.
     /// This method converts the circuit into its SVG depiction and returns the resulting string, providing a visual output intended for environments that support SVG format.
     fn _repr_svg_(&self) -> String {
@@ -361,7 +366,7 @@ impl Circuit {
     /// Converts the quantum circuit into an SVG formatted string using a typesetting conversion utility.
     /// It returns a Result that encapsulates either the SVG representation as a String or an error indicating a failure during conversion.
     pub fn to_svg(&self) -> Result<String, typst_as_lib::TypstAsLibError> {
-        crate::typst::to_svg(self)
+        crate::typst::QuillTable::from(self).to_svg()
     }
 }
 

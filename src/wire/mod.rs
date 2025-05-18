@@ -167,6 +167,7 @@ impl Wire for ZeroState {
 #[derive(derive_more::Display, Debug, Clone, Eq, PartialEq, Hash)]
 #[display("{_0}")]
 /// A structure encapsulating a classical wire characterized by an identifier and a bitwidth.
+///
 /// This type represents a classical wire by wrapping a string label with its corresponding number of bits, facilitating its use in contexts where explicit bit specifications and identifier management are required.
 pub struct Bits(pub String, pub usize);
 

@@ -1655,7 +1655,7 @@ checksum = "edecfcd5d755a5e5d98e24cf43113e7cdaec5a070edd0f6b250c03a573da30fa"
 
 [[package]]
 name = "qucirc"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "by_address",
  "derive_more",

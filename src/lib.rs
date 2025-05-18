@@ -1,6 +1,6 @@
 //! A quantum circuit library for Python and Rust.
 //!
-//! This library provides a set of tools for working with quantum circuits, including:
+//! This library provides an abstract representation of quantum circuits, supporting:
 //! - Quantum gates and operations
 //! - Circuit construction and manipulation
 //! - Visualization and documentation
@@ -13,21 +13,6 @@
 //! - Circuit visualization using Typst
 //! - Python API for easy integration
 //!
-//! # Example
-//!
-//! ```python
-//! from qucirc import Circuit, ops
-//!
-//! # Create a new circuit with 2 qubits
-//! circuit = Circuit(2)
-//!
-//! # Add some gates
-//! circuit.add_gate(ops.H[0])
-//! circuit.add_gate(ops.CNOT[0, 1])
-//!
-//! # Visualize the circuit
-//! print(circuit.to_typst())
-//! ```
 
 #[macro_export]
 macro_rules! pyo3_stub_gen_impl_any {
@@ -76,11 +61,18 @@ macro_rules! pyo3_wrapper_impl {
     };
 }
 
+/// Quantum circuit structures
 pub mod circ;
+
+/// Quantum circuit operations
 pub mod ops;
 
+/// Typst circuit visualization
 pub mod typst;
+
+/// Quantum circuit wires
 pub mod wire;
 
 #[cfg(feature = "python_api")]
+/// Python bindings
 pub mod python;

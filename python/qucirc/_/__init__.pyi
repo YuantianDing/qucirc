@@ -8,6 +8,7 @@ from . import ops
 class Bits:
     r"""
     A structure encapsulating a classical wire characterized by an identifier and a bitwidth.
+    
     This type represents a classical wire by wrapping a string label with its corresponding number of bits, facilitating its use in contexts where explicit bit specifications and identifier management are required.
     """
     ...
@@ -15,6 +16,7 @@ class Bits:
 class Circuit:
     r"""
     A structure representing a quantum circuit with its associated components is defined.
+    
     This type organizes the circuit’s state by maintaining a vector of wires, a directed acyclic graph where nodes correspond to quantum gates and edges represent connections via wire indices, and a vector that tracks the current output node for each input wire.
     """
     wires: builtins.list[typing.Any]
@@ -114,6 +116,7 @@ class Circuit:
 class Gate:
     r"""
     Encapsulates a quantum gate that couples an operation with its input wire indices.
+    
     This structure holds a boxed operation implementing the required interface for quantum operations and a list of indices that identify the corresponding input wires, allowing for structured management and manipulation within a quantum circuit.
     """
     def __repr__(self) -> builtins.str:

@@ -69,6 +69,7 @@ impl QuillTable {
 
 impl std::fmt::Display for QuillTable {
     /// Formats the table into a typst-formatted representation for quantum circuits.
+    ///
     /// It writes a series of lines that include an import statement, page configuration values, and a quantum circuit directive, iterating over each row to output the circuit details with consistent spacing.
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         writeln!(f, "#import \"@preview/quill:0.7.0\": *")?;

@@ -72,7 +72,7 @@ impl CircuitError {
     }
 }
 
-/// Defines a trait representing a quantum circuit operation with support for dynamic cloning, equality checking, hashing, and runtime downcasting.
+/// A trait representing a quantum circuit operation with support for dynamic cloning, equality checking, hashing, and runtime downcasting.
 ///
 ///
 /// Provides a method to validate a set of input wires against operation-specific type requirements, returning a standardized error if validation fails.

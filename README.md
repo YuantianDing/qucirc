@@ -9,6 +9,7 @@ A lightweight and extensible quantum circuit representation for Python and Rust.
 
 - Support for common quantum gates (H, X, Y, Z, CNOT, etc.) defined in [OpenQASM 3.0 Standard Library](https://openqasm.com/language/standard_library.html#)
 - Python API for easy integration
+- Gates are represented using `Box<dyn Operation>`.
 - Extendable circuit visualization using Typst
 - DAG Representation of the circuit, easily exported to `petgraph`.
 - Support for parameterized gates (RX, RY, RZ, U, etc.)
@@ -24,6 +25,7 @@ pip install qucirc
 ```
 
 ### Rust
+
 ```bash
 cargo add qucirc
 ```
@@ -109,7 +111,7 @@ circ += ops.Measure[q0, c0]
 circ
 ```
 
-![](https://github.com/YuantianDing/qucirc/blob/main/docs/output.svg)
+![](https://raw.githubusercontent.com/YuantianDing/qucirc/refs/heads/main/docs/output.svg)
 
 
 2. Exporting to Typst (for documentation):
@@ -127,23 +129,71 @@ print(circ)
 
 ## DAG-based Symbolic representation
 
+The library uses a Directed Acyclic Graph (DAG) to represent quantum circuits symbolically. Every gates are represented as a node in a `petgraph::DiGraph`. Gates are symbolic and accuriate, all parameters are represented by rational number accurately. So that `Eq` between circuits are easily supported:
+
 ```python
 import math
 import qucirc
 from qucirc import ops
 
-circ1 = qucirc.Circuit()
+circ1 = qucirc.Circuit(2)
 circ1 += ops.H[0]
 circ1 += ops.P(1/3 * math.pi)[1]
 
-circ2 = qucirc.Circuit()
+circ2 = qucirc.Circuit(2)
 circ2 += ops.P(1/3 * math.pi)[1]
 circ2 += ops.H[0]
 
 assert circ1 == circ2
 ```
 
+## Adding new gates or wires (Rust-only)
 
+### New gates
+
+New gates can be easily added by implementing `qucirc::ops::Operation`:
+
+```rs
+pub trait Operation:
+    std::fmt::Debug + std::fmt::Display + DynClone + DynEq + DynHash + Downcast + Send + Sync
+{
+    /// Validates the input wires against the operation-specific type requirements.
+    fn type_check(&self, inputs: &[&dyn Wire]) -> Result<(), CircuitError>;
+
+    // Function for visuallization using typst quill, with default implementation.
+    fn add_quill_column(&self, gates: &[usize], table: &mut QuillTable) { ... }
+}
+```
+
+Note that `qucirc::ops::Operation` is not associated with any qubits or classical bits. To add `qucirc::ops::Operation` into the circuit, wrap it with `qucirc::circ::Gate`:
+
+```rs
+pub struct Gate {
+    pub operation: Box<dyn Operation>,
+    pub inputs: Vec<usize>,
+}
+```
+
+`qucirc::circ::Gate` can be directly add into the circuit using `.push` method.
+
+
+### New types of wire
+
+Similarly, to add a new type of wire, the following trait need to be implemented:
+
+```rs
+pub trait Wire:
+    std::fmt::Debug + std::fmt::Display + DynClone + DynEq + DynHash + Downcast + Send + Sync
+{
+    fn is_quantum(&self) -> bool;
+    fn bitwidth(&self) -> Option<usize>;
+
+    // Function for visuallization using typst quill, with default implementation.
+    fn quill_wire_start(&self) -> Vec<String> {...}
+}
+```
+
+Then add the wire to the circuit using `new_wire` method.
 
 ## Contributing
 
