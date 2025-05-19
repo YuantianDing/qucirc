@@ -25,14 +25,9 @@ jobs:
       - name: Build wheels
         uses: PyO3/maturin-action@v1
         with:
-          command: develop
-          args: --all-features --pip-path=/usr/local/bin/pip3
-
-      - name: Upload wheels
-        uses: actions/upload-artifact@v4
-        with:
-          name: wheels-linux-${{ matrix.platform.target }}
-          path: dist
+          command: build
+          args: --all-features --out dist
+      - run: pip install dist/*.whl
 
       - run: pip install -e . pdoc3
       - run: pdoc3 --html --force qucirc
