@@ -31,12 +31,24 @@ macro_rules! impl_add_quill_column1 {
 
 macro_rules! impl_py {
     ($name:ident; $($args:ident),*; $($args_no_pi:ident),*) => {
+        impl $name {
+            pub fn new_f64($($args: f64),*) -> Self {
+                $(
+                    let $args_no_pi = Ratio::approximate_float_unsigned($args / std::f64::consts::PI)
+                        .expect("Angle is not a rational number");
+                )*
+                Self {
+                    $( $args_no_pi ),*
+                }
+            }
+        }
+
         #[cfg(feature = "python_api")]
         #[pyo3_stub_gen::derive::gen_stub_pymethods]
-#[pyo3::pymethods]
+        #[pyo3::pymethods]
         impl $name {
             #[new]
-            fn new($($args: f64),*) -> Self {
+            fn new_py($($args: f64),*) -> Self {
                 $(
                     let $args_no_pi = Ratio::approximate_float_unsigned($args / std::f64::consts::PI)
                         .expect("Angle is not a rational number");
@@ -48,7 +60,7 @@ macro_rules! impl_py {
             fn __call__(&self) -> Self {
                 self.clone()
             }
-
+            /// Create a new gate from the operation
             fn __getitem__(&self, qubit: usize) -> Gate {
                 Gate {
                     operation: Box::new(self.clone()),

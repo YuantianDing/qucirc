@@ -31,17 +31,23 @@ macro_rules! impl_add_quill_column1 {
 
 macro_rules! impl_py {
     ($name:ident, $op:expr) => {
+        impl $name {
+            pub fn new() -> Self {
+                Self
+            }
+        }
         #[cfg(feature = "python_api")]
         #[pyo3_stub_gen::derive::gen_stub_pymethods]
         #[pyo3::pymethods]
         impl $name {
             #[new]
-            fn new() -> Self {
+            fn new_py() -> Self {
                 $name
             }
             fn __call__(&self) -> Self {
                 self.clone()
             }
+            /// Create a new gate from the operation
             fn __getitem__(&self, qubit: usize) -> Gate {
                 Gate {
                     operation: Box::new(self.clone()),
